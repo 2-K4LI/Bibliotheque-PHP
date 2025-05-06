@@ -1,6 +1,14 @@
 <?php
 require_once 'includes/connexion.php';
 
+try {
+    $stmt = $pdo->query("SELECT * FROM categories");
+    $categories = $stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log("Erreur de lecture : " . $e->getMessage());
+    exit("Erreur du chargement des livres");
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Nettoyage des données
     $isbn = trim($_POST['isbn']);
@@ -8,16 +16,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $auteur = trim($_POST['auteur']);
     $annee = trim($_POST['annee']);
     $genre = trim($_POST['genre']);
+    $categorie = trim($_POST['categorie']);
 
     // Validation
     if (empty($isbn) || strlen($isbn) !== 13 || !is_numeric($isbn)) {
         $erreur = "ISBN invalide (13 chiffres requis)";
     } else {
         try {
-            $sql = "INSERT INTO livres (isbn, titre, auteur, annee_publication, genre)
-                    VALUES (?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO livres (isbn, titre, auteur, annee_publication, genre, catID)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    ";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$isbn, $titre, $auteur, $annee, $genre]);
+            $stmt->execute([$isbn, $titre, $auteur, $annee, $genre, $categorie]);
             $succes = "Livre ajouté avec succès !";
         } catch (PDOException $e) {
             error_log("Erreur d'insertion : " . $e->getMessage());
@@ -49,7 +59,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="Roman">Roman</option>
             <option value="Science-Fiction">Science-Fiction</option>
             <option value="Histoire">Histoire</option>
-        </select><br><br>
+        </select>
+        <br>
+        Categorie:
+        <select name="categorie">
+        <?php foreach ($categories as $categorie): ?>
+                <option value="<?= htmlspecialchars($categorie["id"]) ?>"><?= htmlspecialchars($categorie["categorie"]) ?></option>
+        <?php endforeach; ?>
+        </select>
+        <br><br>
         <button type="submit">Ajouter</button>
     </form>
 

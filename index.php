@@ -20,6 +20,7 @@
         <ul>
             <li><a href="/ajouter-livre.php">Ajouter Livre</a></li>
             <li><a href="/liste-livres.php">Liste Livres</a></li>
+            <li><a href="/ajouter-categorie.php">ajouter categorie</a></li>
         </ul>
     </nav>
     <img src="https://img.pikbest.com/ai/illus_our/20230427/3ec27c8e46d7c0f527fa1127c6fc1adb.jpg!w700wp" alt="">
